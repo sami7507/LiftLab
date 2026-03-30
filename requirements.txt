@@ -1,0 +1,61 @@
+# =============================================================================
+# A/B Testing & Statistical Inference Dashboard
+# requirements.txt  —  Python 3.10+
+#
+# Install (production):
+#   pip install -r requirements.txt
+#
+# Install (development, includes test tools):
+#   pip install -r requirements.txt -r requirements-dev.txt
+#
+# Every package listed here is DIRECTLY imported by the project.
+# Transitive dependencies are resolved automatically by pip.
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# 1. Core scientific computing
+#    Used by: src/tests/frequentist.py, src/bayesian/beta_binomial.py,
+#             src/utils/sample_size.py, src/utils/data_generator.py
+# -----------------------------------------------------------------------------
+numpy>=1.26.0               # Arrays, random number generation, linear algebra
+scipy>=1.11.0               # stats (t-test, chi2, mannwhitneyu, norm, beta)
+                            # scipy.special (betaln)
+pandas>=2.1.0               # DataFrames for data_generator.to_dataframe()
+                            # and all st.dataframe() calls in app.py
+statsmodels>=0.14.0         # proportions_ztest (z_test_proportions)
+                            # multipletests (benjamini_hochberg, bonferroni)
+
+
+# -----------------------------------------------------------------------------
+# 2. Dashboard & visualisation
+#    Used by: app.py, src/visualization/plots.py
+# -----------------------------------------------------------------------------
+streamlit>=1.29.0           # Web dashboard framework (st.*, @st.cache_data)
+plotly>=5.18.0              # All charts — go.Figure, go.Scatter, go.Bar,
+                            # plotly.subplots.make_subplots, plotly.express
+
+
+# -----------------------------------------------------------------------------
+# 3. Configuration & settings
+#    Used by: config/settings.py
+# -----------------------------------------------------------------------------
+pydantic>=2.5.0             # Field(), model validation in Settings dataclass
+pydantic-settings>=2.1.0   # BaseSettings — reads from .env + env vars
+
+
+# -----------------------------------------------------------------------------
+# 4. Logging
+#    Used by: src/tests/frequentist.py, src/bayesian/beta_binomial.py,
+#             src/utils/sample_size.py, src/utils/data_generator.py
+# -----------------------------------------------------------------------------
+loguru>=0.7.0               # logger.info / .debug / .warning throughout src/
+
+
+# -----------------------------------------------------------------------------
+# 5. Testing
+#    Used by: tests/test_statistical_tests.py
+# -----------------------------------------------------------------------------
+pytest>=7.4.0               # Test runner
+pytest-cov>=4.1.0           # Coverage reporting (--cov flag)
+hypothesis>=6.90.0          # Property-based tests (@given, strategies)

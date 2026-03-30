@@ -1,0 +1,75 @@
+# =============================================================================
+# .gitignore — A/B Testing & Statistical Inference Dashboard
+# =============================================================================
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.pyo
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+.env.local
+
+# ── Environment variables — NEVER commit secrets ──────────────────────────────
+.env
+.env.*
+!.env.template        # template is safe to commit
+
+# ── Distribution / packaging ─────────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+.eggs/
+
+# ── Test & coverage ───────────────────────────────────────────────────────────
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# ── Ruff / linting cache ──────────────────────────────────────────────────────
+.ruff_cache/
+
+# ── Streamlit ─────────────────────────────────────────────────────────────────
+.streamlit/secrets.toml   # Streamlit secrets — never commit
+
+# ── Jupyter (if used for exploratory work) ───────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── Data — generated / exported files ────────────────────────────────────────
+data/exports/
+data/samples/*.csv
+data/samples/*.parquet
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── OS artefacts ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDEs ─────────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ── Type checkers ─────────────────────────────────────────────────────────────
+.mypy_cache/
+.pytype/
+.dmypy.json

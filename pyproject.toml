@@ -1,0 +1,286 @@
+# =============================================================================
+# pyproject.toml — A/B Testing & Statistical Inference Dashboard
+#
+# PEP 517/518 compliant build configuration.
+# Covers: packaging, dependencies, pytest, coverage, and ruff linting.
+#
+# Usage:
+#   pip install -e .                  # editable install (dev)
+#   pip install -e ".[dev]"           # editable install + dev extras
+#   pytest                            # run test suite (reads [tool.pytest])
+#   ruff check src/ tests/ app.py     # lint
+#   ruff format src/ tests/ app.py    # auto-format
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# Build system
+# Using setuptools (stable, widely supported).
+# PEP 517 backend — pip uses this to build the package.
+# -----------------------------------------------------------------------------
+[build-system]
+requires      = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+
+# -----------------------------------------------------------------------------
+# Project metadata  (PEP 621)
+# -----------------------------------------------------------------------------
+[project]
+name            = "ab-testing-dashboard"
+version         = "2.0.0"
+description     = "Industry-grade A/B Testing & Statistical Inference Dashboard"
+readme          = "README.md"
+license         = { text = "MIT" }
+requires-python = ">=3.10"
+
+authors = [
+    { name = "Your Name", email = "you@example.com" },
+]
+
+keywords = [
+    "a/b testing",
+    "statistical inference",
+    "bayesian",
+    "frequentist",
+    "data science",
+    "streamlit",
+    "experimentation",
+]
+
+# PyPI classifiers — useful if you ever publish the package
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Framework :: Streamlit",
+]
+
+# ── Runtime dependencies (mirrors requirements.txt, sans test tools) ─────────
+dependencies = [
+    # Scientific computing
+    "numpy>=1.26.0",
+    "scipy>=1.11.0",
+    "pandas>=2.1.0",
+    "statsmodels>=0.14.0",
+
+    # Dashboard & visualisation
+    "streamlit>=1.29.0",
+    "plotly>=5.18.0",
+
+    # Configuration
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+
+    # Logging
+    "loguru>=0.7.0",
+]
+
+
+# ── Optional dependency groups ────────────────────────────────────────────────
+[project.optional-dependencies]
+
+# Install with:  pip install -e ".[dev]"
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "hypothesis>=6.90.0",
+    "ruff>=0.3.0",
+]
+
+# Install with:  pip install -e ".[test]"
+test = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "hypothesis>=6.90.0",
+]
+
+# Install with:  pip install -e ".[lint]"
+lint = [
+    "ruff>=0.3.0",
+]
+
+
+# ── Entry points (CLI shortcuts) ──────────────────────────────────────────────
+# After `pip install -e .` you can run `ab-dashboard` from anywhere
+[project.scripts]
+ab-dashboard = "app:main"
+
+
+# ── Project URLs ──────────────────────────────────────────────────────────────
+[project.urls]
+Homepage   = "https://github.com/your-username/ab-testing-dashboard"
+Repository = "https://github.com/your-username/ab-testing-dashboard"
+Issues     = "https://github.com/your-username/ab-testing-dashboard/issues"
+
+
+# -----------------------------------------------------------------------------
+# Package discovery (setuptools)
+# Tells setuptools which directories contain importable Python code.
+# -----------------------------------------------------------------------------
+[tool.setuptools.packages.find]
+where   = ["."]           # search from project root
+include = ["src*", "config*"]   # include src/ and config/ packages
+exclude = ["tests*"]      # never ship tests in a distribution
+
+
+# -----------------------------------------------------------------------------
+# pytest configuration
+# -----------------------------------------------------------------------------
+[tool.pytest.ini_options]
+
+# Where to find tests
+testpaths = ["tests"]
+
+# Default CLI flags applied on every `pytest` run:
+#   --cov=src              measure coverage for the src/ package
+#   --cov-report=term-missing  print missed lines in terminal
+#   --cov-report=html      write htmlcov/ for browser review
+#   --cov-fail-under=80    fail CI if coverage drops below 80%
+#   -v                     verbose — show each test name
+#   --tb=short             short tracebacks — readable in CI logs
+addopts = """
+    --cov=src
+    --cov-report=term-missing
+    --cov-report=html
+    --cov-fail-under=80
+    -v
+    --tb=short
+"""
+
+# Minimum pytest version required
+minversion = "7.4"
+
+# Custom markers (use @pytest.mark.<name> in tests)
+markers = [
+    "slow: marks tests as slow (deselect with -m 'not slow')",
+    "integration: marks integration tests requiring external services",
+    "bayesian: marks tests that run Monte Carlo simulations",
+    "frequentist: marks frequentist statistical test cases",
+]
+
+# Treat these warnings as errors — keeps the codebase clean
+filterwarnings = [
+    "error",
+    # Suppress known harmless deprecation warnings from dependencies
+    "ignore::DeprecationWarning:scipy.*",
+    "ignore::DeprecationWarning:numpy.*",
+    "ignore::PendingDeprecationWarning",
+    "ignore::FutureWarning:pandas.*",
+]
+
+# Log settings during tests
+log_cli       = true
+log_cli_level = "WARNING"
+
+
+# -----------------------------------------------------------------------------
+# Coverage configuration (pytest-cov / coverage.py)
+# -----------------------------------------------------------------------------
+[tool.coverage.run]
+source    = ["src"]
+branch    = true          # measure branch coverage, not just line coverage
+omit      = [
+    "src/*/__init__.py",  # init files have no logic
+    "tests/*",
+]
+
+[tool.coverage.report]
+# Lines matching these patterns are excluded from coverage reporting
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "def __str__",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "@(abc\\.)?abstractmethod",
+]
+show_missing  = true
+skip_covered  = false
+fail_under    = 80         # same threshold as pytest addopts
+
+
+# -----------------------------------------------------------------------------
+# Ruff — fast Python linter + formatter (replaces flake8 + isort + black)
+# Docs: https://docs.astral.sh/ruff/
+# -----------------------------------------------------------------------------
+[tool.ruff]
+# Files and directories to lint
+include = ["app.py", "src/**/*.py", "config/**/*.py", "tests/**/*.py"]
+
+# Files to never lint
+exclude = [
+    ".venv",
+    "__pycache__",
+    ".git",
+    "htmlcov",
+    "dist",
+    "build",
+]
+
+line-length    = 88        # matches Black's default
+indent-width   = 4
+target-version = "py310"   # minimum supported Python version
+
+
+[tool.ruff.lint]
+# Rule sets enabled:
+#   E  — pycodestyle errors
+#   W  — pycodestyle warnings
+#   F  — pyflakes (unused imports, undefined names)
+#   I  — isort (import ordering)
+#   N  — pep8-naming (snake_case, CamelCase conventions)
+#   B  — flake8-bugbear (common bugs and design issues)
+#   UP — pyupgrade (modernise syntax for target Python version)
+#   SIM— flake8-simplify (suggest simpler code patterns)
+#   D  — pydocstyle (docstring conventions) — only selected rules
+select = ["E", "W", "F", "I", "N", "B", "UP", "SIM"]
+
+ignore = [
+    "E501",    # line too long — ruff format handles this
+    "B008",    # do not perform function calls in default arguments (Streamlit pattern)
+    "N802",    # function name should be lowercase — allow _Post_table helpers
+    "SIM108",  # use ternary operator — sometimes if/else is clearer
+    "UP007",   # use X | Y for union types — keep Optional[] for clarity
+]
+
+# Allow auto-fix for all enabled rules (when running `ruff check --fix`)
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when prefixed with underscore
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+_*))$"
+
+
+[tool.ruff.lint.isort]
+# Import ordering: standard library → third-party → local
+known-first-party  = ["src", "config"]
+known-third-party  = [
+    "numpy", "scipy", "pandas", "statsmodels",
+    "streamlit", "plotly",
+    "pydantic", "loguru",
+    "pytest", "hypothesis",
+]
+force-sort-within-sections = true
+lines-after-imports        = 2
+
+
+[tool.ruff.lint.pep8-naming]
+# Allow class names like FrequentistTests (Tests suffix on a class is fine)
+classmethod-decorators = ["classmethod", "validator"]
+
+
+[tool.ruff.format]
+# Formatter settings (equivalent to Black)
+quote-style              = "double"
+indent-style             = "space"
+skip-magic-trailing-comma = false
+line-ending              = "auto"

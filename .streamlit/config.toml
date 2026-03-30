@@ -1,0 +1,45 @@
+# =============================================================================
+# .streamlit/config.toml — Streamlit framework configuration
+#
+# This file is automatically loaded by Streamlit on startup.
+# It locks the dark theme at the framework level so users can't accidentally
+# switch to light mode via the hamburger menu.
+#
+# Docs: https://docs.streamlit.io/develop/api-reference/configuration
+# =============================================================================
+
+[theme]
+# ── Dark theme palette ───────────────────────────────────────────────────────
+base                = "dark"
+primaryColor        = "#388bfd"        # accent blue  — sliders, active radio, links
+backgroundColor     = "#0e1117"        # main canvas  — deep dark
+secondaryBackgroundColor = "#161b27"   # sidebar + cards
+textColor           = "#e6edf3"        # primary text — near-white
+font                = "sans serif"
+
+
+[server]
+# ── Server behaviour ─────────────────────────────────────────────────────────
+port                = 8501
+headless            = false             # set true for Docker / CI
+enableCORS          = false
+enableXsrfProtection = true
+maxUploadSize       = 50               # MB — for CSV upload feature
+
+
+[browser]
+# ── Browser behaviour ────────────────────────────────────────────────────────
+gatherUsageStats    = false            # no telemetry sent to Streamlit Inc.
+serverAddress       = "localhost"
+serverPort          = 8501
+
+
+[runner]
+# ── Script execution ─────────────────────────────────────────────────────────
+magicEnabled        = true
+fastReruns          = true             # re-run as user types (not on blur)
+
+
+[logger]
+# ── Streamlit internal log level ─────────────────────────────────────────────
+level               = "warning"        # suppress info noise in terminal
