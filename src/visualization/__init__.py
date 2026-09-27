@@ -1,15 +1,15 @@
 """
 src.visualization
 ─────────────────
-Plotly chart functions for the A/B Testing Dashboard.
+Plotly chart functions for LiftLab.
 
 Every function in this package:
   - Accepts plain Python types and numpy arrays (no Streamlit dependency)
   - Returns a ``plotly.graph_objects.Figure`` ready for ``st.plotly_chart()``
   - Uses a consistent color scheme:
-      control  →  #185FA5  (blue)
-      variant  →  #0F6E56  (green)
-  - Has a transparent background (works in both light and dark Streamlit themes)
+      control  →  #58a6ff  (blue)
+      variant  →  #3fb950  (green)
+  - Ships with a dark, WCAG-aware layout (see ``LAYOUT_BASE`` in ``plots.py``)
 
 Public API
 ──────────
