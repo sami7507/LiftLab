@@ -1,7 +1,7 @@
 """
 src.utils
 ─────────
-Supporting utilities for experiment design and data generation.
+Supporting utilities for experiment design and data generation. Part of LiftLab.
 
 Sub-modules
 ───────────
