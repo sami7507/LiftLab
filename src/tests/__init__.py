@@ -1,7 +1,7 @@
 """
 src.tests
 ─────────
-Frequentist statistical testing module.
+Frequentist statistical testing module. Part of LiftLab.
 
 Public API
 ──────────
