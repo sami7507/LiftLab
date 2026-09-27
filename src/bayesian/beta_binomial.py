@@ -1,7 +1,7 @@
 """
 src/bayesian/beta_binomial.py
 ──────────────────────────────
-Bayesian A/B testing using the Beta-Binomial conjugate model.
+Bayesian A/B testing using the Beta-Binomial conjugate model. Part of LiftLab.
 
 Why Bayesian?
   - Gives P(B beats A) — a direct business-friendly probability
