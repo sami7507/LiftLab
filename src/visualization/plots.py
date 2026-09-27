@@ -1,7 +1,7 @@
 """
 src/visualization/plots.py
 ───────────────────────────
-All Plotly visualisation functions for the A/B Testing Dashboard.
+All Plotly visualisation functions for LiftLab.
 
 Design principles:
   - Each function returns a go.Figure (composable, testable)
