@@ -13,7 +13,7 @@ Sections:
     4. Data Quality (SRM)     — Sample Ratio Mismatch, A/A test calibration
     5. Sequential Monitoring  — Bayesian updating, early stopping, daily tracker
 
-Author : Sami  (sami757007@gmail.com · linkedin.com/in/sami7507)
+Author : Sami  (sami757007@gmail.com · linkedin.com/in/samikhan07)
 Version: 2.1.0
 Python : 3.10+
 """
@@ -473,6 +473,52 @@ def _interp(text: str) -> None:
     st.markdown(f'<div class="interp-box">{text}</div>', unsafe_allow_html=True)
 
 
+def _parse_manual_values(raw_text: str) -> np.ndarray:
+    """Parse a comma- or newline-separated block of numbers pasted by the user."""
+    cleaned = raw_text.replace("\n", ",")
+    parts = [p.strip() for p in cleaned.split(",") if p.strip() != ""]
+    if not parts:
+        raise ValueError("No values found.")
+    try:
+        return np.array([float(p) for p in parts], dtype=float)
+    except ValueError as e:
+        raise ValueError(f"{e} — make sure every value is numeric.") from e
+
+
+def _read_uploaded_csv(uploaded_file, is_binary: bool) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Read a user-uploaded CSV into (control, variant) arrays.
+
+    Accepted layouts:
+      - Long format: columns "group" and "value" (group = control/variant, a/b, or 0/1)
+      - Wide format: two columns named "control"/"variant" or "a"/"b"
+    """
+    df = pd.read_csv(uploaded_file)
+    df.columns = [str(c).strip().lower() for c in df.columns]
+
+    if {"group", "value"}.issubset(df.columns):
+        groups = df["group"].astype(str).str.strip().str.lower()
+        control = df.loc[groups.isin(["control", "a", "0"]), "value"].dropna().to_numpy(dtype=float)
+        variant = df.loc[groups.isin(["variant", "b", "1"]), "value"].dropna().to_numpy(dtype=float)
+    elif {"control", "variant"}.issubset(df.columns):
+        control = df["control"].dropna().to_numpy(dtype=float)
+        variant = df["variant"].dropna().to_numpy(dtype=float)
+    elif {"a", "b"}.issubset(df.columns):
+        control = df["a"].dropna().to_numpy(dtype=float)
+        variant = df["b"].dropna().to_numpy(dtype=float)
+    else:
+        raise ValueError(
+            "Expected either columns ['group', 'value'] or ['control', 'variant']. "
+            f"Found: {list(df.columns)}"
+        )
+
+    if is_binary:
+        control = (control > 0).astype(float)
+        variant = (variant > 0).astype(float)
+
+    return control, variant
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # ██████████████████████████  SECTION 1: FREQUENTIST  ██████████████████████████
 # ─────────────────────────────────────────────────────────────────────────────
@@ -488,34 +534,100 @@ if section == "🔬 Frequentist Tests":
 
     # ── 1a. Experiment Parameters ─────────────────────────────────────────────
     with st.expander("⚙ Experiment Parameters", expanded=True):
-        c1, c2, c3, c4 = st.columns(4)
-        with c1:
-            metric_type = st.selectbox(
-                "Metric type",
-                ["Conversion (binary)", "Revenue (log-normal)",
-                 "Session Time (Gamma)", "NPS (ordinal)"],
-                help=(
-                    "Binary → Chi-square + Z-test\n"
-                    "Continuous → Welch / Student t-test\n"
-                    "Ordinal / skewed → Mann-Whitney U"
-                ),
+        metric_type = st.selectbox(
+            "Metric type",
+            ["Conversion (binary)", "Revenue (log-normal)",
+             "Session Time (Gamma)", "NPS (ordinal)"],
+            help=(
+                "Binary → Chi-square + Z-test\n"
+                "Continuous → Welch / Student t-test\n"
+                "Ordinal / skewed → Mann-Whitney U"
+            ),
+        )
+        is_binary = (metric_type == "Conversion (binary)")
+
+        if data_mode == "Synthetic (demo)":
+            c2, c3, c4 = st.columns(3)
+            with c2:
+                n_per_group = st.slider("n per group", 50, 5000, 500, 50,
+                                        help="Number of users in each variant arm.")
+            with c3:
+                base_rate = st.slider("Baseline rate / scale", 0.01, 0.50, 0.12, 0.01,
+                                      help="Control group conversion rate (binary) or scale factor.")
+            with c4:
+                true_lift_pct = st.slider("True lift (relative %)", -30, 50, 15, 1,
+                                          help="Simulated ground-truth effect of the variant.")
+
+        elif data_mode == "Manual input":
+            st.caption(
+                "Paste raw values for each group — comma-separated or one per line. "
+                "For **Conversion (binary)**, use 0/1 values."
             )
-        with c2:
-            n_per_group = st.slider("n per group", 50, 5000, 500, 50,
-                                    help="Number of users in each variant arm.")
-        with c3:
-            base_rate = st.slider("Baseline rate / scale", 0.01, 0.50, 0.12, 0.01,
-                                  help="Control group conversion rate (binary) or scale factor.")
-        with c4:
-            true_lift_pct = st.slider("True lift (relative %)", -30, 50, 15, 1,
-                                      help="Simulated ground-truth effect of the variant.")
-            true_lift = true_lift_pct / 100.0
+            mc1, mc2 = st.columns(2)
+            with mc1:
+                raw_control = st.text_area(
+                    "Control group values", height=110,
+                    placeholder="0, 1, 0, 1, 1, 0, 0, 1, ...",
+                )
+            with mc2:
+                raw_variant = st.text_area(
+                    "Variant group values", height=110,
+                    placeholder="1, 1, 0, 1, 0, 1, 1, 1, ...",
+                )
+
+        else:  # Upload CSV
+            st.caption(
+                "CSV with either two columns **group, value** (group = control/variant) "
+                "or two columns **control, variant**."
+            )
+            uploaded_file = st.file_uploader("Upload CSV", type=["csv"], key="freq_csv")
+            st.download_button(
+                "Download a sample template",
+                "group,value\ncontrol,0\ncontrol,1\ncontrol,0\ncontrol,1\n"
+                "variant,1\nvariant,1\nvariant,0\nvariant,1\n",
+                file_name="ab_test_template.csv",
+                mime="text/csv",
+            )
 
     # ── 1b. Load data & run tests ─────────────────────────────────────────────
-    dataset = _load_synthetic(rng_seed, metric_type, n_per_group, base_rate, true_lift)
-    control = dataset.control
-    variant = dataset.variant
-    is_binary = (metric_type == "Conversion (binary)")
+    if data_mode == "Synthetic (demo)":
+        true_lift = true_lift_pct / 100.0
+        dataset = _load_synthetic(rng_seed, metric_type, n_per_group, base_rate, true_lift)
+        control = dataset.control
+        variant = dataset.variant
+        data_source_label = f"Synthetic demo data (seed={rng_seed}, true lift={true_lift:+.1%})"
+
+    elif data_mode == "Manual input":
+        if not raw_control.strip() or not raw_variant.strip():
+            st.info("Paste values for both groups above — results will appear here.")
+            st.stop()
+        try:
+            control = _parse_manual_values(raw_control)
+            variant = _parse_manual_values(raw_variant)
+        except ValueError as e:
+            st.error(f"Couldn't parse your input: {e}")
+            st.stop()
+        if is_binary:
+            control = (control > 0).astype(float)
+            variant = (variant > 0).astype(float)
+        if len(control) < 2 or len(variant) < 2:
+            st.error("Each group needs at least 2 values to run a test.")
+            st.stop()
+        data_source_label = f"Your pasted data (n={len(control)} vs n={len(variant)})"
+
+    else:  # Upload CSV
+        if uploaded_file is None:
+            st.info("Upload a CSV above — results will appear here.")
+            st.stop()
+        try:
+            control, variant = _read_uploaded_csv(uploaded_file, is_binary)
+        except Exception as e:
+            st.error(f"Couldn't read that CSV: {e}")
+            st.stop()
+        if len(control) < 2 or len(variant) < 2:
+            st.error("Each group needs at least 2 values to run a test — check your CSV.")
+            st.stop()
+        data_source_label = f"Uploaded: {uploaded_file.name} (n={len(control)} vs n={len(variant)})"
 
     tester = FrequentistTests(alpha=alpha)
 
@@ -538,6 +650,7 @@ if section == "🔬 Frequentist Tests":
     st.divider()
     st.markdown("### Results")
     st.markdown(_sig_badge(primary.significant, primary.p_value), unsafe_allow_html=True)
+    st.caption(f"Data source: {data_source_label}")
 
     ctrl_label = "Control CVR"   if is_binary else "Control mean"
     var_label  = "Variant CVR"   if is_binary else "Variant mean"
@@ -658,12 +771,14 @@ if section == "🔬 Frequentist Tests":
 
     # ── 1i. Raw data sample ───────────────────────────────────────────────────
     with st.expander("Raw data sample (first 40 rows)"):
-        gen_preview = SyntheticDataGenerator(seed=rng_seed)
-        df_preview = gen_preview.to_dataframe(dataset).head(40)
-        st.dataframe(df_preview, use_container_width=True, hide_index=True)
+        preview_df = pd.DataFrame(
+            [{"group": "control", "value": v} for v in control[:40]]
+            + [{"group": "variant", "value": v} for v in variant[:40]]
+        )
+        st.dataframe(preview_df, use_container_width=True, hide_index=True)
         st.caption(
             f"Control n={len(control):,} | Variant n={len(variant):,} | "
-            f"True lift injected: {true_lift:+.1%}"
+            f"Source: {data_source_label}"
         )
 
 
