@@ -5,6 +5,15 @@
 # It locks the dark theme at the framework level so users can't accidentally
 # switch to light mode via the hamburger menu.
 #
+# IMPORTANT: [server].port/.address/.headless and the [browser] server
+# address/port were intentionally removed. Locally these are harmless, but
+# on Streamlit Community Cloud the platform manages port binding and the
+# public URL itself — overriding them here causes the app's health check to
+# fail on startup ("connection refused" on /healthz), even though the exact
+# same code runs fine with `streamlit run app.py` locally. If you need a
+# custom port for local dev, pass it on the command line instead:
+#   streamlit run app.py --server.port 8502
+#
 # Docs: https://docs.streamlit.io/develop/api-reference/configuration
 # =============================================================================
 
@@ -20,18 +29,19 @@ font                = "sans serif"
 
 [server]
 # ── Server behaviour ─────────────────────────────────────────────────────────
-port                = 8501
-headless            = false             # set true for Docker / CI
-enableCORS          = false
-enableXsrfProtection = true
+# port / address / headless / enableCORS / enableXsrfProtection are
+# deliberately NOT set here — Streamlit Community Cloud manages these.
+# Setting them can prevent the app from starting on Cloud even though it
+# runs fine locally.
 maxUploadSize       = 50               # MB — for CSV upload feature
 
 
 [browser]
 # ── Browser behaviour ────────────────────────────────────────────────────────
+# serverAddress / serverPort are deliberately NOT set here — they'd hardcode
+# every visitor's browser to reconnect to "localhost", breaking the deployed
+# app entirely. Streamlit fills these in correctly per-environment on its own.
 gatherUsageStats    = false            # no telemetry sent to Streamlit Inc.
-serverAddress       = "localhost"
-serverPort          = 8501
 
 
 [runner]
