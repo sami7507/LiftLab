@@ -1,7 +1,7 @@
 """
 src.bayesian
 ────────────
-Bayesian A/B testing using the Beta-Binomial conjugate model.
+Bayesian A/B testing using the Beta-Binomial conjugate model. Part of LiftLab.
 
 Public API
 ──────────
