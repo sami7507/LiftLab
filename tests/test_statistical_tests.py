@@ -7,7 +7,7 @@ Covers:
   - FrequentistTests: all 5 test methods
   - BayesianABTest: posterior math, expected loss, sequential
   - SampleSize: compute_sample_size, SRM, CUPED
-  - Data contracts: TestResult, BayesianResult field types
+  - Data contracts: StatisticalTestResult, BayesianResult field types
 
 Run:
     pytest tests/ -v --cov=src --cov-report=term-missing
@@ -22,7 +22,7 @@ from hypothesis import strategies as st
 import sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
 
-from src.tests.frequentist import FrequentistTests, TestResult
+from src.tests.frequentist import StatisticalTestResult as StatisticalStatisticalTestResult
 from src.bayesian.beta_binomial import BayesianABTest, BayesianResult
 from src.utils.sample_size import (
     check_sample_ratio_mismatch,
@@ -79,7 +79,7 @@ class TestWelchTTest:
     def test_returns_test_result_type(self, tester, large_sig_data):
         ctrl, var = large_sig_data
         result = tester.welch_ttest(ctrl, var)
-        assert isinstance(result, TestResult)
+        assert isinstance(result, StatisticalTestResult)
 
     def test_significant_for_large_effect(self, tester, large_sig_data):
         ctrl, var = large_sig_data
