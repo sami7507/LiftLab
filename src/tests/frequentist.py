@@ -1,7 +1,7 @@
 """
 src/tests/frequentist.py
 ─────────────────────────
-Production-grade frequentist A/B testing module.
+Production-grade frequentist A/B testing module. Part of LiftLab.
 
 Implements:
   - Welch's t-test         → continuous metrics (revenue, session time)
