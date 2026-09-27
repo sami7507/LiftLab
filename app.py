@@ -1,7 +1,7 @@
 """
 app.py
 ───────
-A/B Testing & Statistical Inference Dashboard — Streamlit Entry Point
+LiftLab — A/B Testing & Statistical Inference Dashboard
 
 Run:
     streamlit run app.py
@@ -13,8 +13,8 @@ Sections:
     4. Data Quality (SRM)     — Sample Ratio Mismatch, A/A test calibration
     5. Sequential Monitoring  — Bayesian updating, early stopping, daily tracker
 
-Author : Your Name
-Version: 2.0.0
+Author : Sami  (sami757007@gmail.com · linkedin.com/in/samikhan07)
+Version: 2.1.0
 Python : 3.10+
 """
 
@@ -57,15 +57,21 @@ from src.visualization.plots import (
 # Page configuration  (must be first Streamlit call)
 # ─────────────────────────────────────────────────────────────────────────────
 
+APP_NAME = settings.app_title
+GITHUB_URL = "https://github.com/sami7507/AB-Besting-Statistical-Inference-Dashboard"
+
 st.set_page_config(
-    page_title=settings.app_title,
+    page_title=f"{APP_NAME} — Statistical Inference Dashboard",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
-        "Get Help": "https://github.com/your-repo/ab-testing-dashboard",
-        "Report a bug": "https://github.com/your-repo/ab-testing-dashboard/issues",
-        "About": "Industry-grade A/B Testing & Statistical Inference Dashboard v2.0",
+        "Get Help": GITHUB_URL,
+        "Report a bug": f"{GITHUB_URL}/issues",
+        "About": (
+            f"{APP_NAME} · Industry-grade A/B Testing & Statistical Inference "
+            "Dashboard v2.1 — built by Sami (sami757007@gmail.com)"
+        ),
     },
 )
 
@@ -76,32 +82,81 @@ st.set_page_config(
 st.markdown("""
 <style>
     /* ══════════════════════════════════════════════════════════════════
-       DARK THEME — A/B Testing Dashboard
-       Forces a consistent dark aesthetic regardless of Streamlit theme.
+       DARK THEME — LiftLab
+       Forces a consistent, polished dark aesthetic regardless of the
+       Streamlit theme the user has selected.
        ══════════════════════════════════════════════════════════════════ */
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    code, pre, .stCodeBlock, .stCode { font-family: 'JetBrains Mono', monospace !important; }
 
     /* ── App background & main container ── */
     .stApp {
-        background-color: #0e1117 !important;
+        background: radial-gradient(circle at 20% 0%, #131924 0%, #0e1117 45%) !important;
     }
     .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 1.4rem !important;
         padding-bottom: 2rem !important;
-        max-width: 1200px;
+        max-width: 1220px;
     }
 
     /* ── Sidebar ── */
     [data-testid="stSidebar"] {
-        background-color: #161b27 !important;
-        border-right: 1px solid #2a2f3e !important;
+        background-color: #10141d !important;
+        border-right: 1px solid #232838 !important;
     }
     [data-testid="stSidebar"] * { color: #c9d1d9 !important; }
     [data-testid="stSidebar"] h1,
-    [data-testid="stSidebar"] h2 { color: #e6edf3 !important; }
+    [data-testid="stSidebar"] h2 { color: #e6edf3 !important; letter-spacing: -0.01em; }
 
     /* ── All text defaults ── */
     h1, h2, h3, h4 { color: #e6edf3 !important; letter-spacing: -0.02em; }
     p, span, label { color: #c9d1d9; }
+
+    /* ── Hero banner ── */
+    .hero-banner {
+        background: linear-gradient(135deg, #171d2b 0%, #0e1117 100%);
+        border: 1px solid #262c3d;
+        border-radius: 16px;
+        padding: 26px 32px;
+        margin-bottom: 1.4rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-banner::before {
+        content: "";
+        position: absolute;
+        top: -60%; right: -8%;
+        width: 320px; height: 320px;
+        background: radial-gradient(circle, rgba(56,139,253,0.16) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .hero-banner::after {
+        content: "";
+        position: absolute;
+        bottom: -70%; left: -6%;
+        width: 260px; height: 260px;
+        background: radial-gradient(circle, rgba(63,185,80,0.10) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .hero-title {
+        font-size: 1.95rem; font-weight: 800; color: #e6edf3; margin: 0;
+        display: flex; align-items: center; gap: 10px; position: relative;
+    }
+    .hero-sub {
+        color: #8b949e; font-size: 0.92rem; margin-top: 8px; max-width: 720px;
+        line-height: 1.55; position: relative;
+    }
+    .hero-badges { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; position: relative; }
+    .hero-badge {
+        background: #1a2233; color: #79c0ff; border: 1px solid #2d5a8e;
+        padding: 4px 13px; border-radius: 20px; font-size: 0.72rem; font-weight: 600;
+        letter-spacing: 0.01em;
+    }
 
     /* ── Metric cards ── */
     [data-testid="stMetricValue"] {
@@ -114,9 +169,14 @@ st.markdown("""
     [data-testid="stMetricDelta"] { font-size: 0.76rem !important; }
     [data-testid="metric-container"] {
         background: #161b27;
-        border: 1px solid #2a2f3e;
-        border-radius: 10px;
+        border: 1px solid #262c3d;
+        border-radius: 12px;
         padding: 14px 16px !important;
+        transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    [data-testid="metric-container"]:hover {
+        border-color: #388bfd55;
+        transform: translateY(-1px);
     }
 
     /* ── Sidebar section labels ── */
@@ -125,7 +185,7 @@ st.markdown("""
         font-weight: 700;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: #484f58 !important;
+        color: #4c5566 !important;
         margin: 1.2rem 0 0.3rem;
     }
 
@@ -154,7 +214,7 @@ st.markdown("""
     /* ── Section header tag ── */
     .section-tag {
         display: inline-block;
-        background: #1a3a5c; color: #79c0ff;
+        background: #16233a; color: #79c0ff;
         padding: 3px 12px; border-radius: 4px;
         font-size: 0.70rem; font-weight: 700;
         letter-spacing: 0.08em; text-transform: uppercase;
@@ -176,15 +236,15 @@ st.markdown("""
 
     /* ── Streamlit info / success / warning overrides ── */
     [data-testid="stAlert"] {
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         border-width: 1px !important;
     }
 
     /* ── Expanders ── */
     [data-testid="stExpander"] {
-        background: #161b27 !important;
-        border: 1px solid #2a2f3e !important;
-        border-radius: 8px !important;
+        background: #141a26 !important;
+        border: 1px solid #262c3d !important;
+        border-radius: 10px !important;
     }
     details summary {
         font-weight: 500;
@@ -195,8 +255,8 @@ st.markdown("""
 
     /* ── DataFrames / tables ── */
     [data-testid="stDataFrame"] {
-        border: 1px solid #2a2f3e !important;
-        border-radius: 8px !important;
+        border: 1px solid #262c3d !important;
+        border-radius: 10px !important;
         overflow: hidden;
     }
     [data-testid="stDataFrame"] table {
@@ -204,7 +264,7 @@ st.markdown("""
         background: #161b27 !important;
     }
     [data-testid="stDataFrame"] th {
-        background: #1c2233 !important;
+        background: #1a2030 !important;
         color: #8b949e !important;
         font-weight: 600 !important;
         text-transform: uppercase;
@@ -213,17 +273,28 @@ st.markdown("""
     }
     [data-testid="stDataFrame"] td { color: #c9d1d9 !important; }
     [data-testid="stDataFrame"] tr:hover td {
-        background: #1c2233 !important;
+        background: #1a2030 !important;
     }
 
     /* ── Plotly chart wrapper ── */
     [data-testid="stPlotlyChart"] {
-        background: #161b27;
-        border: 1px solid #2a2f3e;
-        border-radius: 10px;
+        background: #141a26;
+        border: 1px solid #262c3d;
+        border-radius: 12px;
         overflow: hidden;
         padding: 4px;
     }
+
+    /* ── Buttons ── */
+    .stButton > button, .stDownloadButton > button {
+        background: linear-gradient(135deg, #388bfd 0%, #2d6ee0 100%) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: filter 0.15s ease;
+    }
+    .stButton > button:hover, .stDownloadButton > button:hover { filter: brightness(1.1); }
 
     /* ── Sliders ── */
     [data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] {
@@ -234,8 +305,8 @@ st.markdown("""
     /* ── Select boxes & inputs ── */
     [data-testid="stSelectbox"] > div > div,
     [data-testid="stNumberInput"] input {
-        background: #161b27 !important;
-        border-color: #2a2f3e !important;
+        background: #141a26 !important;
+        border-color: #262c3d !important;
         color: #e6edf3 !important;
     }
 
@@ -252,22 +323,38 @@ st.markdown("""
     /* ── Dividers ── */
     hr {
         margin: 1.5rem 0 !important;
-        border-color: #2a2f3e !important;
+        border-color: #232838 !important;
     }
 
     /* ── Spinner ── */
     [data-testid="stSpinner"] { color: #58a6ff !important; }
 
     /* ── Caption text ── */
-    [data-testid="stCaptionContainer"] p { color: #484f58 !important; font-size: 0.76rem !important; }
+    [data-testid="stCaptionContainer"] p { color: #4c5566 !important; font-size: 0.76rem !important; }
 
     /* ── Title / header spacing ── */
     .stTitle, h1 { margin-bottom: 0.2rem !important; }
 
+    /* ── Footer ── */
+    .app-footer {
+        margin-top: 1.5rem;
+        padding: 18px 22px;
+        border: 1px solid #262c3d;
+        border-radius: 12px;
+        background: #10141d;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .app-footer a { color: #58a6ff !important; text-decoration: none; }
+    .app-footer a:hover { text-decoration: underline; }
+
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #0e1117; }
-    ::-webkit-scrollbar-thumb { background: #2a2f3e; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: #262c3d; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #388bfd; }
 </style>
 """, unsafe_allow_html=True)
@@ -278,8 +365,8 @@ st.markdown("""
 # ─────────────────────────────────────────────────────────────────────────────
 
 with st.sidebar:
-    st.markdown("## ⚡ A/B Testing")
-    st.caption("Statistical Inference Dashboard · v2.0")
+    st.markdown(f"## ⚡ {APP_NAME}")
+    st.caption("Statistical Inference Dashboard · v2.1")
     st.divider()
 
     st.markdown('<p class="sidebar-label">Navigation</p>', unsafe_allow_html=True)
@@ -326,6 +413,32 @@ with st.sidebar:
         "Stack: Python 3.10 · scipy · numpy · pymc · streamlit · plotly\n\n"
         "Tests: Welch t · χ² · Mann-Whitney U · Beta-Binomial · CUPED · SRM"
     )
+    st.divider()
+    st.caption(f"Built by **Sami** · [LinkedIn](https://www.linkedin.com/in/samikhan07)")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Hero banner (main area)
+# ─────────────────────────────────────────────────────────────────────────────
+
+st.markdown(f"""
+<div class="hero-banner">
+    <div class="hero-title">⚡ {APP_NAME}</div>
+    <div class="hero-sub">
+        A production-style Frequentist &amp; Bayesian A/B testing engine — statistical
+        rigor, guardrail checks, and sequential monitoring in one dashboard, built for
+        teams who need to ship experiment decisions with confidence.
+    </div>
+    <div class="hero-badges">
+        <span class="hero-badge">Frequentist</span>
+        <span class="hero-badge">Bayesian</span>
+        <span class="hero-badge">Power Analysis</span>
+        <span class="hero-badge">SRM Detection</span>
+        <span class="hero-badge">Sequential Monitoring</span>
+        <span class="hero-badge">CUPED</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1121,7 +1234,7 @@ elif section == "🔍 Data Quality (SRM)":
     def _auto_badge(is_auto: bool) -> str:
         if is_auto:
             return '<span style="color:#58a6ff;font-size:12px;font-weight:500;">Auto</span>'
-        return '<span style="color:#484f58;font-size:12px;">Manual</span>'
+        return '<span style="color:#4c5566;font-size:12px;">Manual</span>'
 
     checklist_items = [
         ("SRM ratio check",                   "PASSED" if srm_ok else "FAILED", True),
@@ -1137,7 +1250,7 @@ elif section == "🔍 Data Quality (SRM)":
     rows_html = ""
     for check, status, is_auto in checklist_items:
         rows_html += f"""
-        <tr style="border-bottom:1px solid #2a2f3e;">
+        <tr style="border-bottom:1px solid #262c3d;">
           <td style="padding:10px 14px;color:#c9d1d9;font-size:13px;">{check}</td>
           <td style="padding:10px 14px;">{_status_badge(status, is_auto)}</td>
           <td style="padding:10px 14px;">{_auto_badge(is_auto)}</td>
@@ -1145,9 +1258,9 @@ elif section == "🔍 Data Quality (SRM)":
 
     st.markdown(f"""
     <table style="width:100%;border-collapse:collapse;background:#161b27;
-                  border:1px solid #2a2f3e;border-radius:8px;overflow:hidden;">
+                  border:1px solid #262c3d;border-radius:10px;overflow:hidden;">
       <thead>
-        <tr style="background:#1c2233;border-bottom:1px solid #2a2f3e;">
+        <tr style="background:#1a2030;border-bottom:1px solid #262c3d;">
           <th style="padding:9px 14px;text-align:left;color:#8b949e;
                      font-size:11px;font-weight:600;letter-spacing:0.06em;
                      text-transform:uppercase;">Check</th>
@@ -1338,13 +1451,19 @@ elif section == "📈 Sequential Monitoring":
 # ─────────────────────────────────────────────────────────────────────────────
 
 st.divider()
-col_f1, col_f2, col_f3 = st.columns(3)
-with col_f1:
-    st.caption("**A/B Testing & Statistical Inference Dashboard** · v2.0.0")
-with col_f2:
-    st.caption("scipy · numpy · pymc · streamlit · plotly")
-with col_f3:
-    st.caption(
-        "Implements: Welch t · χ² · Mann-Whitney U · "
-        "Bayesian Beta-Binomial · CUPED · SRM · O'Brien-Fleming"
-    )
+st.markdown(f"""
+<div class="app-footer">
+    <div>
+        <strong style="color:#e6edf3;">⚡ {APP_NAME}</strong>
+        <span style="color:#4c5566;"> · v2.1.0 · scipy · numpy · streamlit · plotly</span>
+        <div style="color:#4c5566;font-size:0.78rem;margin-top:2px;">
+            Welch t · χ² · Mann-Whitney U · Bayesian Beta-Binomial · CUPED · SRM · O'Brien-Fleming
+        </div>
+    </div>
+    <div style="color:#8b949e;font-size:0.85rem;text-align:right;">
+        Built by <strong style="color:#c9d1d9;">Sami</strong><br/>
+        <a href="mailto:sami757007@gmail.com">sami757007@gmail.com</a> ·
+        <a href="https://www.linkedin.com/in/samikhan07" target="_blank">LinkedIn</a>
+    </div>
+</div>
+""", unsafe_allow_html=True)
