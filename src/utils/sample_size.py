@@ -1,7 +1,7 @@
 """
 src/utils/sample_size.py
 ─────────────────────────
-Sample size calculation, power analysis, and pre-experiment diagnostics.
+Sample size calculation, power analysis, and pre-experiment diagnostics for LiftLab.
 
 Includes:
   - Two-proportion z-test sample size (Cohen's h)
