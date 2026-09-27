@@ -1,8 +1,8 @@
 """
 config/settings.py
 ──────────────────
-Central configuration using Pydantic BaseSettings.
-All values can be overridden via environment variables or .env file.
+Central configuration for LiftLab, using Pydantic BaseSettings.
+All values can be overridden via environment variables or a .env file.
 """
 
 from pydantic import Field
@@ -15,7 +15,10 @@ class Settings(BaseSettings):
     # ── App ────────────────────────────────────────────────────────────────
     app_env: str = Field("development", description="Runtime environment")
     app_port: int = Field(8501, description="Streamlit port")
-    app_title: str = Field("A/B Testing Dashboard", description="UI title")
+    app_title: str = Field(
+        "LiftLab — Statistical Inference Dashboard",
+        description="UI title (shown in the browser tab and hero banner)",
+    )
 
     # ── Statistical Defaults ───────────────────────────────────────────────
     default_alpha: float = Field(0.05, ge=0.001, le=0.20,
