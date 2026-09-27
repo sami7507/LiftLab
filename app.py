@@ -13,7 +13,7 @@ Sections:
     4. Data Quality (SRM)     — Sample Ratio Mismatch, A/A test calibration
     5. Sequential Monitoring  — Bayesian updating, early stopping, daily tracker
 
-Author : Sami  (sami757007@gmail.com · linkedin.com/in/samikhan07)
+Author : Sami  (sami757007@gmail.com · linkedin.com/in/sami7507)
 Version: 2.1.0
 Python : 3.10+
 """
