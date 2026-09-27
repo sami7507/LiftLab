@@ -1,7 +1,7 @@
 """
 src
 ───
-A/B Testing & Statistical Inference Dashboard — source package.
+LiftLab — A/B Testing & Statistical Inference Dashboard — source package.
 
 Sub-packages
 ────────────
@@ -27,7 +27,7 @@ Typical imports::
     from src.visualization.plots     import plot_posterior_distributions
 """
 
-__version__ = "2.0.0"
-__author__  = "Your Name"
+__version__ = "2.1.0"
+__author__  = "Sami"
 
 __all__ = ["__version__", "__author__"]
