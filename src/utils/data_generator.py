@@ -1,7 +1,7 @@
 """
 src/utils/data_generator.py
 ────────────────────────────
-Generates realistic synthetic A/B test data for demos, testing, and onboarding.
+Generates realistic synthetic A/B test data for LiftLab demos, testing, and onboarding.
 
 Data patterns modelled:
   - Revenue: log-normal (right-skewed, heavy tail)
