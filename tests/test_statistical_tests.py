@@ -1,7 +1,7 @@
 """
 tests/test_statistical_tests.py
 ────────────────────────────────
-Unit + property-based tests for the statistical engine.
+Unit + property-based tests for the LiftLab statistical engine.
 
 Covers:
   - FrequentistTests: all 5 test methods
@@ -22,7 +22,7 @@ from hypothesis import strategies as st
 import sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
 
-from src.tests.frequentist import StatisticalTestResult as StatisticalStatisticalTestResult
+from src.tests.frequentist import FrequentistTests, TestResult as StatisticalTestResult
 from src.bayesian.beta_binomial import BayesianABTest, BayesianResult
 from src.utils.sample_size import (
     check_sample_ratio_mismatch,
