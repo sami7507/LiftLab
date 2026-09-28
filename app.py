@@ -403,7 +403,10 @@ with st.sidebar:
     data_mode = st.selectbox(
         "Input mode",
         options=["Synthetic (demo)", "Manual input", "Upload CSV"],
-        help="Synthetic uses generated data. Manual lets you type raw numbers. CSV uploads your data.",
+        help=("Applies to the Frequentist Tests section. Synthetic = generated demo data, "
+              "Manual = paste raw values, Upload CSV = bring your own experiment data. "
+              "Bayesian, Sample Size and SRM always use the numbers you type in; "
+              "Sequential Monitoring is a simulation."),
     )
     rng_seed = st.number_input("Random seed", value=42, step=1,
                                help="Seed for reproducible synthetic data generation.")
@@ -683,7 +686,7 @@ if section == "🔬 Frequentist Tests":
     with col_l:
         st.markdown("**Distribution comparison**")
         fig_dist = plot_conversion_distributions(control, variant, alpha=alpha)
-        st.plotly_chart(fig_dist, use_container_width=True)
+        st.plotly_chart(fig_dist, width="stretch")
 
     with col_r:
         st.markdown("**Confidence interval comparison**")
@@ -699,7 +702,7 @@ if section == "🔬 Frequentist Tests":
                 alpha=alpha,
                 metric_label=metric_type,
             )
-            st.plotly_chart(fig_ci, use_container_width=True)
+            st.plotly_chart(fig_ci, width="stretch")
         else:
             st.info("Confidence interval not available for this non-parametric test.")
 
@@ -719,7 +722,7 @@ if section == "🔬 Frequentist Tests":
             "Magnitude": r.effect_magnitude.title(),
             "Recommendation": r.recommendation,
         })
-    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
 
     # ── 1g. Interpretation ────────────────────────────────────────────────────
     st.divider()
@@ -755,7 +758,7 @@ if section == "🔬 Frequentist Tests":
                 "Raw p-value": [f"{p:.5f}" for p in raw_pvals],
                 "BH-adjusted p": [f"{p:.5f}" for p in bh_result["adjusted_p_values"]],
                 "Significant at α": ["Yes" if s else "No" for s in bh_result["significant"]],
-            }), use_container_width=True, hide_index=True)
+            }), width="stretch", hide_index=True)
 
         with tab_bonf:
             st.caption(
@@ -767,7 +770,7 @@ if section == "🔬 Frequentist Tests":
                 "Raw p-value": [f"{p:.5f}" for p in raw_pvals],
                 "Bonferroni-adjusted p": [f"{p:.5f}" for p in bonf_result["adjusted_p_values"]],
                 "Significant at α": ["Yes" if s else "No" for s in bonf_result["significant"]],
-            }), use_container_width=True, hide_index=True)
+            }), width="stretch", hide_index=True)
 
     # ── 1i. Raw data sample ───────────────────────────────────────────────────
     with st.expander("Raw data sample (first 40 rows)"):
@@ -775,7 +778,7 @@ if section == "🔬 Frequentist Tests":
             [{"group": "control", "value": v} for v in control[:40]]
             + [{"group": "variant", "value": v} for v in variant[:40]]
         )
-        st.dataframe(preview_df, use_container_width=True, hide_index=True)
+        st.dataframe(preview_df, width="stretch", hide_index=True)
         st.caption(
             f"Control n={len(control):,} | Variant n={len(variant):,} | "
             f"Source: {data_source_label}"
@@ -917,7 +920,7 @@ elif section == "🧠 Bayesian A/B":
             result.alpha_b, result.beta_b,
             ci_level=ci_level,
         )
-        st.plotly_chart(fig_post, use_container_width=True)
+        st.plotly_chart(fig_post, width="stretch")
 
     with col_r:
         st.markdown("**Expected loss (decision theory)**")
@@ -926,7 +929,7 @@ elif section == "🧠 Bayesian A/B":
             result.expected_loss_choose_a,
             loss_threshold=loss_threshold,
         )
-        st.plotly_chart(fig_loss, use_container_width=True)
+        st.plotly_chart(fig_loss, width="stretch")
 
     # ── 2e. Full posterior summary ────────────────────────────────────────────
     st.divider()
@@ -954,7 +957,7 @@ elif section == "🧠 Bayesian A/B":
                 _post_table(result.posterior_mean_a, result.posterior_std_a,
                             result.ci_lower_a, result.ci_upper_a,
                             result.alpha_a, result.beta_a, ci_level),
-                use_container_width=True, hide_index=True,
+                width="stretch", hide_index=True,
             )
 
         with col_b:
@@ -963,7 +966,7 @@ elif section == "🧠 Bayesian A/B":
                 _post_table(result.posterior_mean_b, result.posterior_std_b,
                             result.ci_lower_b, result.ci_upper_b,
                             result.alpha_b, result.beta_b, ci_level),
-                use_container_width=True, hide_index=True,
+                width="stretch", hide_index=True,
             )
 
     # ── 2f. Prior sensitivity analysis ────────────────────────────────────────
@@ -984,7 +987,7 @@ elif section == "🧠 Bayesian A/B":
                 "Posterior mean B": f"{r2.posterior_mean_b:.4%}",
                 "Recommendation": r2.recommendation.split(".")[0],
             })
-        st.dataframe(pd.DataFrame(sensitivity_rows), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(sensitivity_rows), width="stretch", hide_index=True)
         st.caption(
             "If P(B>A) is stable across all three priors, the result is robust. "
             "Large swings indicate the data is insufficient to overwhelm the prior."
@@ -1063,13 +1066,13 @@ elif section == "📐 Sample Size & Power":
         st.markdown("**Power curve vs. sample size**")
         pwr_data = power_curve(ss_base, ss_mde, alpha=alpha)
         fig_pwr = plot_power_curve(pwr_data, ss_result.n_per_group, ss_power)
-        st.plotly_chart(fig_pwr, use_container_width=True)
+        st.plotly_chart(fig_pwr, width="stretch")
 
     with col_r:
         st.markdown("**MDE vs. required sample size**")
         mde_data = mde_curve(ss_base, alpha=alpha, power=ss_power)
         fig_mde = plot_mde_curve(mde_data)
-        st.plotly_chart(fig_mde, use_container_width=True)
+        st.plotly_chart(fig_mde, width="stretch")
 
     # ── 3d. Duration estimation table ─────────────────────────────────────────
     with st.expander("Duration estimation for different traffic levels"):
@@ -1087,7 +1090,7 @@ elif section == "📐 Sample Size & Power":
                     else "Impractical"
                 ),
             })
-        st.dataframe(pd.DataFrame(duration_rows), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(duration_rows), width="stretch", hide_index=True)
         st.caption(
             "Rule of thumb: experiments > 90 days face novelty effect and seasonal confounds."
         )
@@ -1125,7 +1128,7 @@ elif section == "📐 Sample Size & Power":
             "Alpha boundary": [f"{b:.6f}" for b in boundaries],
             "Reject H₀ if p <": [f"{b:.6f}" for b in boundaries],
         })
-        st.dataframe(looks_df, use_container_width=True, hide_index=True)
+        st.dataframe(looks_df, width="stretch", hide_index=True)
         st.caption(
             "O'Brien-Fleming is conservative early (hard to stop) and nearly full α at the "
             "final look — the industry standard. Pocock uses a constant boundary but requires "
@@ -1256,7 +1259,7 @@ elif section == "🔍 Data Quality (SRM)":
               delta=f"{srm_result.observed_ratio - exp_ratio:+.4f}")
 
     fig_srm = plot_srm_diagnostic(int(srm_a), int(srm_b), exp_ratio)
-    st.plotly_chart(fig_srm, use_container_width=True)
+    st.plotly_chart(fig_srm, width="stretch")
 
     with st.expander("SRM root cause guide"):
         st.markdown("""
@@ -1508,7 +1511,7 @@ elif section == "📈 Sequential Monitoring":
 
     monitored_history = history[:len(seq_snapshots)]
     fig_seq = plot_sequential_monitoring(monitored_history, early_stop_idx)
-    st.plotly_chart(fig_seq, use_container_width=True)
+    st.plotly_chart(fig_seq, width="stretch")
 
     # ── 5e. Day-by-day snapshot table ─────────────────────────────────────────
     st.divider()
@@ -1534,7 +1537,7 @@ elif section == "📈 Sequential Monitoring":
         lambda x: "⛔ Stop" if x else ""
     )
 
-    st.dataframe(snapshot_df, use_container_width=True, hide_index=True)
+    st.dataframe(snapshot_df, width="stretch", hide_index=True)
 
     # ── 5f. Sequential decision guide ─────────────────────────────────────────
     with st.expander("Sequential decision guide"):
