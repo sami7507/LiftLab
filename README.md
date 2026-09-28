@@ -4,16 +4,15 @@
 
 ### A/B Testing & Statistical Inference Dashboard
 
-*Frequentist and Bayesian experimentation, guardrail checks, and sequential monitoring — in one production-style tool.*
+*Frequentist and Bayesian experiment analysis, data-quality guardrails, and sequential monitoring — bring your own data and get a defensible ship / hold decision.*
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.29%2B-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
-[![Tests](https://img.shields.io/badge/tests-pytest%20%7C%20hypothesis-0A9EDC)](#testing)
-[![Coverage](https://img.shields.io/badge/coverage-target%2080%25-3fb950)](#testing)
-[![License: MIT](https://img.shields.io/badge/license-MIT-8b949e)](#license)
-[![Made by Sami](https://img.shields.io/badge/made%20by-Sami-58a6ff)](https://www.linkedin.com/in/samikhan07)
+[![Live Demo](https://img.shields.io/badge/live%20demo-liftlab--dashboard.streamlit.app-FF4B4B?logo=streamlit&logoColor=white)](https://liftlab-dashboard.streamlit.app)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.51-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Tests](https://img.shields.io/badge/tests-59%20%7C%20pytest%20%2B%20hypothesis-0A9EDC)](#testing)
+[![License: MIT](https://img.shields.io/badge/license-MIT-8b949e)](LICENSE)
 
-[Live Demo](#) · [Features](#features) · [Statistical Methods](#statistical-methods) · [Quickstart](#quickstart) · [About the Author](#about-the-author)
+**[🚀 Open the live app](https://liftlab-dashboard.streamlit.app)** · [Features](#features) · [Bring your own data](#bring-your-own-data) · [Statistical methods](#statistical-methods) · [Run locally](#run-locally) · [About the author](#about-the-author)
 
 </div>
 
@@ -21,31 +20,76 @@
 
 ## Overview
 
-**LiftLab** is a full-stack experimentation dashboard that reproduces the analysis pipeline used by real product-analytics and growth teams: run a frequentist test, cross-check it against a Bayesian model, size the next experiment correctly, catch broken instrumentation *before* trusting the result, and monitor a live rollout without falling into the peeking trap.
+**LiftLab** reproduces the analysis workflow used by product-analytics and growth teams:
 
-It's built to demonstrate applied statistics, not just wrap `scipy.stats` in a UI — every screen includes the *why*, not only the *what*: effect sizes, confidence vs. credible intervals, expected-loss decision theory, SRM root-cause guidance, and anti-peeking sequential boundaries.
+1. **Check the data first** — detect Sample Ratio Mismatch before trusting any metric.
+2. **Test the result** — run the right frequentist test for the metric type, with effect sizes and confidence intervals.
+3. **Cross-check with Bayesian inference** — `P(B > A)` and expected loss give a decision framed in business terms.
+4. **Size the next experiment** — power analysis, minimum detectable effect, and CUPED variance reduction.
+5. **Monitor without peeking errors** — sequential Bayesian updating with early-stopping rules.
 
-> 💡 **Why this project exists:** most portfolios show a model. This shows a *decision system* — the kind of tool a data scientist or analytics engineer builds internally to stop shipping A/B tests on vibes.
+Every screen explains the *why* (assumptions, interpretation, pitfalls), not just the number.
+
+---
+
+## Try it in 30 seconds
+
+1. Open the **[live app](https://liftlab-dashboard.streamlit.app)**.
+2. In the sidebar, set **Input mode → Upload CSV**.
+3. Upload one of the ready-made files from [`data/samples/`](data/samples):
+   - [`conversion_long_format.csv`](data/samples/conversion_long_format.csv) — set *Metric type → Conversion (binary)*. Result: significant.
+   - [`revenue_wide_format.csv`](data/samples/revenue_wide_format.csv) — set *Metric type → Revenue*. Result: not significant → **Hold**.
 
 ---
 
 ## Features
 
-| Module | What it does |
+| Section | What it does |
 |---|---|
-| **🔬 Frequentist Tests** | Welch's t-test, Student's t-test, Chi-square, Mann-Whitney U, Z-test for proportions, with Benjamini-Hochberg (FDR) and Bonferroni (FWER) multiple-testing correction |
-| **🧠 Bayesian A/B** | Beta-Binomial conjugate model, Monte Carlo `P(B > A)`, expected-loss decision framework, credible intervals, prior-sensitivity analysis |
-| **📐 Sample Size & Power** | Cohen's h power analysis, MDE tradeoff curves, CUPED variance reduction, O'Brien-Fleming α-spending for interim looks |
-| **🔍 Data Quality (SRM)** | Sample Ratio Mismatch detection, A/A test calibration (false-positive rate check), pre-experiment quality checklist |
-| **📈 Sequential Monitoring** | Day-by-day Bayesian posterior updates, early-stopping rules, live CVR + `P(B > A)` tracking |
+| **🔬 Frequentist Tests** | Welch t, Student t, Chi-square, Mann-Whitney U, Z-test for proportions, BH and Bonferroni multiple-testing correction. Runs on synthetic, pasted, or uploaded data. |
+| **🧠 Bayesian A/B** | Beta-Binomial model, Monte Carlo `P(B > A)`, expected-loss decision rule, credible intervals, prior-sensitivity analysis. |
+| **📐 Sample Size & Power** | Cohen's h power analysis, MDE trade-off curve, duration estimator, CUPED variance reduction, O'Brien-Fleming α-spending. |
+| **🔍 Data Quality (SRM)** | Sample Ratio Mismatch detection, A/A false-positive-rate simulation, pre-experiment checklist. |
+| **📈 Sequential Monitoring** | Day-by-day Bayesian updating, early-stopping rules, live `P(B > A)` and CVR tracking (simulation). |
 
 ---
 
-## Screenshot
+## Bring your own data
 
-> _Add a screenshot or GIF of the dashboard here — this single image does more for recruiter attention than any paragraph of text._
->
-> `docs/screenshot-frequentist.png` · `docs/screenshot-bayesian.png`
+Which sections take your real numbers today:
+
+| Section | Data input |
+|---|---|
+| Frequentist Tests | **Real data supported** — paste raw values, or upload a CSV (sidebar → *Input mode*). Synthetic demo mode is also available. |
+| Bayesian A/B | **Real numbers** — type visitors and conversions for each arm. |
+| Sample Size & Power | **Real numbers** — type baseline rate, MDE, and traffic. (The CUPED sub-demo uses simulated revenue.) |
+| Data Quality (SRM) | **Real numbers** — type assignment counts for each arm. (The A/A calibration is a simulation by design.) |
+| Sequential Monitoring | Simulation only. |
+
+### CSV formats accepted (Frequentist Tests)
+
+**Long format** — one row per user:
+
+```csv
+group,value
+control,0
+control,1
+variant,1
+variant,0
+```
+
+**Wide format** — one column per arm (columns may differ in length):
+
+```csv
+control,variant
+5.10,6.20
+4.80,5.90
+```
+
+- Group labels accepted: `control` / `variant`, `a` / `b`, or `0` / `1` (case-insensitive).
+- For **Conversion (binary)**, any value `> 0` counts as a conversion.
+- Pick the matching **Metric type** so the right tests run: binary → Chi-square + Z-test; continuous → Welch + Student t. Mann-Whitney U is always included.
+- The app has a **Download sample template** button, and `data/samples/` has two working examples.
 
 ---
 
@@ -55,11 +99,11 @@ It's built to demonstrate applied statistics, not just wrap `scipy.stats` in a U
 
 | Test | Use case | Effect size |
 |---|---|---|
-| Welch's t-test | Continuous metrics, unequal variance | Hedges' g |
+| Welch's t-test | Continuous metrics, unequal variance (default) | Hedges' g |
 | Student's t-test | Continuous metrics, equal variance | Cohen's d |
 | Chi-square | Binary outcomes (CVR, CTR) | Cramér's V |
 | Z-test (proportions) | Large-sample binary outcomes | Cohen's h |
-| Mann-Whitney U | Non-normal / ordinal metrics (NPS, revenue) | CLES `P(B>A)` |
+| Mann-Whitney U | Skewed / ordinal metrics (revenue, NPS) | CLES `P(B > A)` |
 
 Multiple-testing correction: **Benjamini-Hochberg (FDR)** and **Bonferroni (FWER)**.
 
@@ -70,204 +114,165 @@ Exact conjugate posterior — no MCMC required:
 ```
 Prior:      θ  ~  Beta(α₀, β₀)
 Likelihood: k  ~  Binomial(n, θ)
-Posterior:  θ|k,n  ~  Beta(α₀+k, β₀+n-k)
+Posterior:  θ | k, n  ~  Beta(α₀ + k, β₀ + n − k)
 ```
 
-**Decision rule:** ship B when `P(B > A) ≥ 95%` **and** `expected_loss < threshold`.
+**Decision rule:** ship B when `P(B > A) ≥ 95%` **and** `expected loss < threshold`.
 
-### Power Analysis
-
-Sample size via **Cohen's h** (arcsine transform of proportions) — more accurate than the plain z-test formula at extreme base rates:
+### Power analysis (Cohen's h)
 
 ```
 h = 2·arcsin(√p₂) − 2·arcsin(√p₁)
-n = ((z_α + z_β) / h)²
+n = ((z_α + z_β) / h)²        # per group
 ```
+
+The arcsine transform stabilises the variance of proportions, so it stays accurate at extreme base rates where the plain z-test formula drifts.
 
 ### CUPED
 
-Variance reduction via pre-experiment covariate regression:
-
 ```
-Y_cuped = Y − θ·(X − E[X])     where θ = Cov(Y,X) / Var(X)
-Variance reduction = 1 − ρ(Y,X)²
+Y_cuped = Y − θ·(X − E[X])      θ = Cov(Y, X) / Var(X)
+Variance reduction = 1 − ρ(Y, X)²
 ```
 
-Typical reduction: **20–50%**, equivalent to running 25–100% more users for free.
-
-### Sequential Testing
+### Sequential testing
 
 - **Frequentist:** O'Brien-Fleming α-spending boundaries prevent Type-I error inflation from interim peeking.
-- **Bayesian:** posteriors are valid at any stopping time — no correction needed, which is why the Sequential Monitoring module uses daily Bayesian updates instead of raw p-values.
+- **Bayesian:** posteriors remain valid at any stopping time, so the monitoring module updates daily and stops on `P(B > A)` plus expected loss instead of raw p-values.
 
-### SRM Detection
+### SRM detection
 
-Sample Ratio Mismatch is checked via a chi-square test on assignment counts, at a stricter **α = 0.01**. SRM invalidates every downstream metric until the root cause (hashing bug, bot filtering, sticky sessions, logging drop, flag-rollout lag) is found and fixed.
+Chi-square on assignment counts at a stricter **α = 0.01**. A mismatch invalidates every downstream metric until the root cause (hashing bug, bot filtering, sticky sessions, logging drop, flag lag) is fixed.
 
 ---
 
 ## Architecture
 
 ```
-liftlab/
+LiftLab/
+├── app.py                          # Streamlit UI + orchestration
+├── requirements.txt                # runtime dependencies (pinned)
+├── requirements-dev.txt            # + pytest, pytest-cov, hypothesis
+├── pyproject.toml                  # tooling / pytest config
+├── Makefile · Dockerfile · .env.template · conftest.py
+├── LICENSE
 │
-├── app.py                         ← Streamlit entry point (UI + orchestration)
-├── requirements.txt               ← pip dependencies
-├── pyproject.toml                 ← packaging, pytest, ruff config
-├── .env.template                  ← environment variables template
-├── conftest.py                    ← shared pytest fixtures
-├── Makefile                       ← developer workflow shortcuts
-├── Dockerfile                     ← containerised deployment
-│
-├── config/
-│   └── settings.py                ← pydantic BaseSettings
+├── .streamlit/config.toml          # dark theme (no server/port overrides — see Deployment)
+├── config/settings.py              # pydantic-settings configuration
+├── data/samples/                   # ready-to-upload example CSVs
 │
 ├── src/
-│   ├── tests/frequentist.py       ← all frequentist tests + corrections
-│   ├── bayesian/beta_binomial.py  ← Bayesian inference engine
+│   ├── tests/frequentist.py        # frequentist tests + corrections
+│   ├── bayesian/beta_binomial.py   # Bayesian engine
 │   ├── utils/
-│   │   ├── sample_size.py         ← power analysis, SRM, CUPED
-│   │   └── data_generator.py      ← synthetic dataset factory
-│   └── visualization/plots.py     ← all Plotly chart functions
+│   │   ├── sample_size.py          # power, MDE, SRM, CUPED, α-spending
+│   │   └── data_generator.py       # synthetic dataset factory
+│   └── visualization/plots.py      # Plotly figures
 │
-└── tests/
-    └── test_statistical_tests.py  ← unit + property-based test suite
+└── tests/test_statistical_tests.py # 59 unit + property-based tests
 ```
 
-**Design principle:** the statistics layer (`src/`) has zero Streamlit imports — every test, model, and calculation is a pure function that returns a typed result object, independently unit-testable and reusable outside the dashboard (e.g. in a notebook or a batch job).
+**Design principle:** the statistics layer (`src/`) has no Streamlit imports. Every test and model is a pure function returning a typed result object, so it can be unit-tested and reused in notebooks or batch jobs.
 
 ---
 
-## Quickstart
+## Run locally
 
-### 1. Clone and set up the environment
+Requires **Python 3.11+**.
 
 ```bash
-git clone https://github.com/sami7507/liftlab.git
-cd liftlab
+git clone https://github.com/sami7507/LiftLab.git
+cd LiftLab
 
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 
-pip install -r requirements.txt
+pip install -r requirements.txt    # add requirements-dev.txt for the test suite
+streamlit run app.py               # http://localhost:8501
 ```
 
-### 2. Configure environment
-
-```bash
-cp .env.template .env
-# Edit .env if you want to change defaults (optional)
-```
-
-### 3. Run the dashboard
-
-```bash
-streamlit run app.py
-# Opens at http://localhost:8501
-```
-
-### Or use Make
-
-```bash
-make install-dev   # full setup including dev tools
-make run           # start dashboard
-make test          # run test suite
-make lint          # ruff linter
-make format        # auto-format code
-```
+Optional: `cp .env.template .env` to override defaults (α, power, Monte Carlo samples).
 
 ### Docker
 
 ```bash
-# Build
 docker build -t liftlab .
-
-# Run
 docker run -p 8501:8501 liftlab
-
-# Run with a custom env file
-docker run -p 8501:8501 --env-file .env liftlab
-
-# Open http://localhost:8501
 ```
+
+---
+
+## Deployment (Streamlit Community Cloud)
+
+The live app is deployed from `main` on [Streamlit Community Cloud](https://streamlit.io/cloud): connect the repo, set the main file to `app.py`, choose Python 3.11.
+
+Two lessons from getting it live, kept here because they cost real debugging time:
+
+1. **Pin your dependencies.** With open `>=` ranges, a fresh Cloud install can resolve untested new majors (pandas 3.0, numpy 2.5). `requirements.txt` pins the tested set instead.
+2. **Don't override server networking in `.streamlit/config.toml`.** Setting `[server] port`, `headless`, or `[browser] serverAddress` works locally but made the Cloud health check fail with `connection refused` on `/healthz`. Cloud manages port binding and the public URL itself. The committed config only sets theme, upload size, and logging.
 
 ---
 
 ## Testing
 
 ```bash
-# Full suite with coverage
-pytest
+pip install -r requirements-dev.txt
 
-# Fast only (skip slow property-based tests)
-pytest -m "not slow"
-
-# Only Bayesian tests
-pytest -m bayesian
-
-# Only frequentist tests
-pytest -m frequentist
-
-# Verbose single file
-pytest tests/test_statistical_tests.py -v
-
-# HTML coverage report
-make test-cov
+pytest                     # full suite with coverage
+pytest -m "not slow"       # skip slow property-based tests
+pytest tests/ -v           # verbose
 ```
 
-Coverage target: **80%** (enforced in `pyproject.toml`). Property-based tests (via `hypothesis`) fuzz the statistical functions against edge cases — zero variance, tiny samples, extreme base rates — that hand-picked unit tests tend to miss.
+59 tests cover all five frequentist methods (CI coverage checks, effect-size direction, small-sample warnings), Bayesian posterior math and expected loss, sample-size monotonicity, SRM, CUPED, α-spending, the data generator, and Hypothesis property-based checks.
 
 ---
 
-## Key Design Decisions
+## Key design decisions
 
-**Why not PyMC for the Bayesian module?**
-The Beta-Binomial pair is conjugate — the posterior is analytically exact. MCMC adds heavy dependencies and runtime with no accuracy benefit for a binomial conversion metric.
+**Why not PyMC?** Beta-Binomial is conjugate — the posterior is exact. MCMC would add heavy dependencies and runtime with no accuracy gain for a conversion metric.
 
-**Why Cohen's h instead of the plain z-test sample-size formula?**
-The arcsine transform stabilises the variance of a proportion. At extreme base rates (1% or 45%) the plain formula over- or under-estimates the required sample size significantly.
+**Why Cohen's h for sample size?** Variance-stabilising arcsine transform; accurate at 1% or 45% base rates where the simple formula over/under-estimates.
 
-**Why Welch's t-test as the default, not Student's?**
-Welch's test doesn't assume equal variances and is strictly more general — it matches Student's when variances are equal, but doesn't silently break when they aren't.
+**Why Welch as the default t-test?** No equal-variance assumption; matches Student's when variances agree and stays valid when they don't.
 
-**Why Mann-Whitney for revenue metrics?**
-Revenue is typically zero-inflated and heavily right-skewed. A t-test's normality assumption is shaky there; Mann-Whitney tests stochastic dominance without assuming a distribution shape.
+**Why Mann-Whitney for revenue?** Revenue is zero-inflated and right-skewed; Mann-Whitney tests stochastic dominance without a distribution assumption.
+
+**Why expected loss, not just `P(B > A)`?** A 96% chance of winning by a hair can be worse than a 90% chance of a large win. Expected loss prices the downside of being wrong.
 
 ---
 
 ## Roadmap
 
-- [ ] CSV upload → real experiment data (currently synthetic-only end to end)
-- [ ] Multi-armed / multi-variant tests (not just A vs. B)
-- [ ] Stratified / CUPED-adjusted sequential monitoring
+- [x] Real data input for Frequentist Tests (paste or CSV upload)
+- [x] Live deployment on Streamlit Community Cloud
+- [ ] CSV upload for Sequential Monitoring (cumulative daily counts)
+- [ ] Multi-variant (A/B/n) tests
 - [ ] Export a one-click experiment readout as PDF
-- [ ] Slack/webhook alert on SRM detection
+- [ ] Alerting hook (Slack/webhook) when SRM is detected
 
 ---
 
-## Tech Stack
+## Tech stack
 
 | Layer | Technology |
 |---|---|
-| Language | Python 3.10+ |
+| Language | Python 3.11+ |
 | Statistics | scipy, numpy, statsmodels |
 | Dashboard | Streamlit |
 | Charts | Plotly |
-| Config | pydantic-settings |
-| Logging | loguru |
-| Testing | pytest, hypothesis |
-| Linting | ruff |
+| Config / logging | pydantic-settings, loguru |
+| Testing | pytest, pytest-cov, hypothesis |
 | Container | Docker |
 
 ---
 
 ## Contributing
 
-Issues and PRs are welcome. Please run `make lint` and `make test` before opening a pull request.
+Issues and pull requests are welcome. Please run `pytest` before opening a PR.
 
 ## License
 
-MIT — see [LICENSE](LICENSE) for details.
+MIT — see [LICENSE](LICENSE).
 
 ---
 
@@ -275,8 +280,6 @@ MIT — see [LICENSE](LICENSE) for details.
 
 **Sami**
 📧 [sami757007@gmail.com](mailto:sami757007@gmail.com)
-🔗 [linkedin.com/in/samikhan07](https://www.linkedin.com/in/sami7507)
+🔗 [linkedin.com/in/samikhan07](https://www.linkedin.com/in/samikhan07)
 
-Built as a demonstration of applied statistical reasoning end-to-end: frequentist and Bayesian inference, experiment design, data-quality guardrails, and sequential decision-making — packaged as a tool a real experimentation team could actually use.
-
-If you're a hiring manager or engineer reviewing this: happy to walk through any design decision above, especially the trade-offs between the frequentist and Bayesian modules.
+Built to demonstrate applied statistics end to end: experiment design, frequentist and Bayesian inference, data-quality guardrails, and sequential decision-making — packaged as a tool an experimentation team could actually use. Happy to walk through any design decision above.
