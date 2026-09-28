@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     app_env: str = Field("development", description="Runtime environment")
     app_port: int = Field(8501, description="Streamlit port")
     app_title: str = Field(
-        "LiftLab — Statistical Inference Dashboard",
-        description="UI title (shown in the browser tab and hero banner)",
+        "LiftLab",
+        description="Product name (shown in the browser tab, sidebar and hero banner)",
     )
 
     # ── Statistical Defaults ───────────────────────────────────────────────
