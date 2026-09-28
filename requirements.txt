@@ -1,70 +1,30 @@
 # =============================================================================
 # LiftLab — A/B Testing & Statistical Inference Dashboard
-# requirements.txt  —  Python 3.10+
+# requirements.txt — RUNTIME dependencies only (what the dashboard needs to run)
 #
-# Install (production):
-#   pip install -r requirements.txt
+#   pip install -r requirements.txt            # run the app
+#   pip install -r requirements-dev.txt        # run the app + test suite
 #
-# Install (development, includes test tools):
-#   pip install -r requirements.txt -r requirements-dev.txt
+# Requires Python 3.11+ (numpy 2.3 / scipy 1.16 dropped Python 3.10).
+# Tested on Python 3.11 (Streamlit Community Cloud) and 3.13 (local).
 #
-# Versions below are PINNED to the exact combination tested locally.
-# This avoids Streamlit Cloud (or any fresh install) silently resolving
-# untested newer majors — e.g. pandas 3.0, which shipped breaking API
-# changes after this app was written against the pandas 2.x series and
-# was the root cause of a Cloud-only startup crash. If you deliberately
-# want to move to a newer major, bump it here and re-test locally first.
+# Versions are PINNED to the combination this project was tested against.
+# Unpinned ">=" ranges let a fresh install (e.g. Streamlit Cloud) resolve
+# untested new major versions such as pandas 3.0. To upgrade deliberately,
+# bump a version here and re-run the test suite first.
 # =============================================================================
 
+# ── Core scientific computing ────────────────────────────────────────────────
+numpy==2.3.5                # arrays, RNG, linear algebra
+scipy==1.16.3               # t-tests, chi-square, Mann-Whitney, distributions
+pandas==2.3.3               # DataFrames, CSV ingestion (stay on 2.x)
+statsmodels==0.14.5         # proportions z-test, multiple-testing correction
 
-# -----------------------------------------------------------------------------
-# 1. Core scientific computing
-#    Used by: src/tests/frequentist.py, src/bayesian/beta_binomial.py,
-#             src/utils/sample_size.py, src/utils/data_generator.py
-# -----------------------------------------------------------------------------
-numpy==2.3.5                # Arrays, random number generation, linear algebra
-scipy==1.16.3                # stats (t-test, chi2, mannwhitneyu, norm, beta)
-                             # scipy.special (betaln)
-pandas==2.3.3                # DataFrames for data_generator.to_dataframe()
-                             # and all st.dataframe() calls in app.py
-                             # NOTE: stay on the 2.x series — pandas 3.0 has
-                             # breaking changes this codebase isn't tested against
-statsmodels==0.14.5          # proportions_ztest (z_test_proportions)
-                             # multipletests (benjamini_hochberg, bonferroni)
+# ── Dashboard & visualisation ────────────────────────────────────────────────
+streamlit==1.51.0           # web app framework
+plotly==6.3.0               # interactive charts
 
-
-# -----------------------------------------------------------------------------
-# 2. Dashboard & visualisation
-#    Used by: app.py, src/visualization/plots.py
-# -----------------------------------------------------------------------------
-streamlit==1.51.0            # Web dashboard framework (st.*, @st.cache_data)
-plotly==6.3.0                 # All charts — go.Figure, go.Scatter, go.Bar,
-                             # plotly.subplots.make_subplots, plotly.express
-pyarrow<25                  # Streamlit itself pins around a known pyarrow 25
-                             # segfault; pinned here too for a deterministic
-                             # install instead of relying on the auto-downgrade
-
-
-# -----------------------------------------------------------------------------
-# 3. Configuration & settings
-#    Used by: config/settings.py
-# -----------------------------------------------------------------------------
-pydantic==2.12.4              # Field(), model validation in Settings dataclass
-pydantic-settings==2.12.0    # BaseSettings — reads from .env + env vars
-
-
-# -----------------------------------------------------------------------------
-# 4. Logging
-#    Used by: src/tests/frequentist.py, src/bayesian/beta_binomial.py,
-#             src/utils/sample_size.py, src/utils/data_generator.py
-# -----------------------------------------------------------------------------
-loguru==0.7.3                # logger.info / .debug / .warning throughout src/
-
-
-# -----------------------------------------------------------------------------
-# 5. Testing
-#    Used by: tests/test_statistical_tests.py
-# -----------------------------------------------------------------------------
-pytest==8.4.2                 # Test runner
-pytest-cov==7.1.0             # Coverage reporting (--cov flag)
-hypothesis==6.168.2           # Property-based tests (@given, strategies)
+# ── Configuration & logging ──────────────────────────────────────────────────
+pydantic==2.12.4            # settings validation
+pydantic-settings==2.12.0   # reads .env + environment variables
+loguru==0.7.3               # structured logging
