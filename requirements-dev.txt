@@ -1,0 +1,9 @@
+# =============================================================================
+# LiftLab — development / testing dependencies
+#   pip install -r requirements-dev.txt     (includes runtime requirements)
+# =============================================================================
+-r requirements.txt
+
+pytest==8.4.2               # test runner
+pytest-cov==7.1.0           # coverage reporting (--cov)
+hypothesis==6.168.2         # property-based tests
