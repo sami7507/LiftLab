@@ -279,7 +279,7 @@ MIT — see [LICENSE](LICENSE).
 ## About the Author
 
 **Sami**
-📧 [sami757007@gmail.com](mailto:sami757007@gmail.com)
-🔗 [linkedin.com/in/samikhan07](https://www.linkedin.com/in/sami7507)
+📧 [samikhan75706@gmail.com](mailto:samikhan75706@gmail.com)
+🔗 [linkedin.com/in/sami7507](https://www.linkedin.com/in/sami7507)
 
 Built to demonstrate applied statistics end to end: experiment design, frequentist and Bayesian inference, data-quality guardrails, and sequential decision-making — packaged as a tool an experimentation team could actually use. Happy to walk through any design decision above.
